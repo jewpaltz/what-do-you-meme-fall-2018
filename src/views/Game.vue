@@ -9,7 +9,7 @@
             <div class="card" >
                     <h5 class="card-header">
                         Players
-                        <a @click.prevent="login" class="btn btn-sm btn-primary" :class="{disabled: playerId() !== null}">+</a>
+                        <a @click.prevent="login" class="btn btn-sm btn-primary" :class="{disabled: playerId !== null}">+</a>
                     </h5>
                     <ul class="list-group list-group-flush">
                         <li v-for="p in state.players" :key="p.id"
@@ -63,10 +63,10 @@
 </style>
 
 <script>
-import { GetState, FlipPicture, GetMyCaptions, Login, playerId } from '@/services/api_access';
+import * as api from '@/services/api_access';
 
 export default {
-    data: function(){
+    data(){
         return {
             state: {
                 picture: "",
@@ -74,27 +74,28 @@ export default {
                 playedCaptions: [],
             },
             myCaptions: [],
-            //playerId: null
         }
     },
-    created: function(){
+    created(){
         this.refresh();
     },
     methods: {
         refresh(){
-            GetState()
+            api.GetState()
             .then(x=> this.state = x)
         },
-        flipPicture: function(){
-            FlipPicture()
+        flipPicture(){
+            api.FlipPicture()
             .then(()=> this.refresh())
         },
-        login: function() {
-            Login(prompt('What is your name?'))
-            .then(()=>  GetMyCaptions().then(x=> this.myCaptions = x) )
+        login() {
+            api.Login(prompt('What is your name?'))
+            .then(()=>  api.GetMyCaptions().then(x=> this.myCaptions = x) )
             .then(()=> this.refresh())
         },
-        playerId: ()=> playerId
+    },
+    computed: {
+        playerId: ()=> api.playerId
     }
 }
 </script>
