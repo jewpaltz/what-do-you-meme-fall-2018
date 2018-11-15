@@ -41,8 +41,9 @@
                     <a @click.prevent="flipPicture" class="btn btn-primary">Flip Picture</a>
                     <a @click.prevent="getFBPictures" class="btn btn-secondary">From FB</a>
                 </div>
+                <PicturePicker :pictures="fbPictures" ></PicturePicker>
                 <div>
-                    <img v-for="p in fbPictures" :src="p.picture" :key="p.id" />
+                    
                 </div>            
             </div>
         </div>
@@ -86,6 +87,8 @@
 <script>
 import * as api from '@/services/api_access';
 import * as fb from '@/services/facebook';
+import PicturePicker from '@/components/PicturePicker';
+// eslint-disable-next-line
 let loopTimer = null;
 
 export default {
@@ -140,6 +143,7 @@ export default {
         }
     },
     components: {
+        PicturePicker
     }
 }
 </script>
