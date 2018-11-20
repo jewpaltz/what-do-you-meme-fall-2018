@@ -15,7 +15,9 @@ export default {
     },
     methods: {
         capture(){
-            this.context2d.drawImage(this.video, 0, 0, 640, 480);
+            const width = this.canvas.width = this.video.width;
+            const height = this.canvas.height = this.video.height;
+            this.context2d.drawImage(this.video, 0, 0, width, height);
             this.captures.push({
                 id: this.captures.length,
                 picture: this.canvas.toDataURL("image/png")
