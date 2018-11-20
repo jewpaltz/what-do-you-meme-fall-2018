@@ -42,9 +42,7 @@
                     <a @click.prevent="getFBPictures" class="btn btn-secondary">From FB</a>
                 </div>
                 <PicturePicker :pictures="fbPictures" ></PicturePicker>
-                <div>
-                    
-                </div>            
+                <picture-taker></picture-taker>            
             </div>
         </div>
         <div class="col-md-4">
