@@ -1,4 +1,5 @@
 import * as api from './api_access'
+let delayed = null;
 
 window.fbAsyncInit = function() {
     FB.init({
@@ -10,10 +11,9 @@ window.fbAsyncInit = function() {
       
     FB.AppEvents.logPageView();   
     
-    // eslint-disable-next-line
-    FB.getLoginStatus(function(response) { 
-        //statusChangeCallback(response);
-    });
+    if(delayed){
+        delayed();
+     }
   };
 
   (function(d, s, id){
@@ -25,10 +25,25 @@ window.fbAsyncInit = function() {
    }(document, 'script', 'facebook-jssdk'));
 
    export function FBLogin(){
-       FB.login(
-           response => statusChangeCallback(response),
-           {scope: 'public_profile,email,user_photos'}
-       )
+       const p = new Promise((resolve, reject)=>{
+            FB.login(
+                response => statusChangeCallback(response, resolve, reject),
+                {scope: 'public_profile,email,user_photos'}
+            )
+        });
+        return p;
+   }
+
+   export function getLoginStatus(){
+        return new Promise((resolve, reject)=>{
+            delayed = ()=> FB.getLoginStatus(function(response) { 
+                    statusChangeCallback(response, resolve, reject);
+            });
+            if(typeof FB != 'undefined'){
+                delayed();
+                delayed = null;
+            }
+        })
    }
 
    export function GetPhotos(callback){
@@ -38,11 +53,22 @@ window.fbAsyncInit = function() {
        })
    }
 
-   function statusChangeCallback(response){
-       console.log(response);
-       FB.api("/me?fields=name,email,birthday,picture", me => {
-        console.log(me);
-        api.Login(me.name, response.authResponse.userID, response.authResponse.accessToken)
+   function statusChangeCallback(response, resolve, reject){
+        console.log(response);
+        if(!response.authResponse){
 
-       })
+            reject("The user did not login")
+
+        }else{
+
+            FB.api("/me?fields=name,email,birthday,picture", me => {
+                console.log(me);
+                api.Login(me.name, response.authResponse.userID, response.authResponse.accessToken)
+                .then(x=> {
+                     resolve(x)
+                });
+            })
+
+        }
+
    }

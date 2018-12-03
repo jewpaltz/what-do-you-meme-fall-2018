@@ -101,10 +101,17 @@ export default {
             fbPictures: []
         }
     },
-    created(){
-        loopTimer = setInterval(this.refresh, 1000);
+    async mounted(){
+        //loopTimer = setInterval(this.refresh, 1000);
         if(api.playerId !== null && this.myCaptions.length == 0){
             api.GetMyCaptions().then(x=> this.myCaptions = x);
+        }
+        try {
+            await fb.getLoginStatus()
+            this.state = await api.GetState()
+            
+        } catch (error) {
+            console.log(error);
         }
     },
     methods: {
@@ -118,9 +125,13 @@ export default {
         flipPicture(){
             api.FlipPicture()
         },
-        login() {
-            fb.FBLogin();
-            //.then(()=> api.GetMyCaptions().then(x=> this.myCaptions = x) )
+        async login() {
+            try {
+                await fb.FBLogin();
+                this.state = await api.GetState();
+            } catch (error) {
+                alert(error)
+            }
         },
         submitCaption(c){
             api.SubmitCaption(c)
